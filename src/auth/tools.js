@@ -1,21 +1,48 @@
 const jwt = require("jsonwebtoken");
 const User = require("../services/profiles/schema");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const saltRounds = 10;
+const bcrypt = require("bcryptjs");
 const authenticate = async (user) => {
   try {
-    console.log("authenticate =>",user)
-    const newAccessToken = await generateJWT({ _id: user._id }); // why do we pass user id?
+    console.log("authenticate =>", user);
+    const newAccessToken = await generateJWT({ _id: user._id });
     const newRefreshToken = await generateRefreshJWT({ _id: user._id });
-    const user2 = await User.findByIdAndUpdate(mongoose.Types.ObjectId(user._id),{$addToSet:{refreshTokens:{ token: newAccessToken, refreshToken:newRefreshToken }}},{new:true});
-   console.log("user2->",user2)
+    const user2 = await User.findByIdAndUpdate(
+      mongoose.Types.ObjectId(user._id),
+      {
+        $addToSet: {
+          tokens: { token: newAccessToken, refreshToken: newRefreshToken },
+        },
+      },
+      { new: true }
+    );
+    console.log("user2->", user);
 
-    return {accessToken:newAccessToken, refreshToken:newRefreshToken};
+    if(user2){
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    }else{
+      console.log("Wrong Credentials")
+      return "Wrong Credentials"
+    }
+
   } catch (error) {
     console.log(error);
     throw new Error(error);
   }
 };
-
+const cryptPassword = async (plainPW) => {
+  try {
+    // , function (err, hash) {
+    //   console.log("hash ->",hash)
+    //   return hash;
+    // }
+    return await bcrypt.hash(plainPW, saltRounds);
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+};
 const generateJWT = (payload) =>
   new Promise((res, rej) =>
     jwt.sign(
@@ -28,15 +55,7 @@ const generateJWT = (payload) =>
       }
     )
   );
-addToFavourites = async (id, city) => {
-  try {
-    const user = await User.findByIdAndUpdate(mongoose.Types.ObjectId(id),{$addToSet:{favourites:city}},{new:true});
-    console.log(user)
-    return user;
-  } catch (err) {
-    console.log("Problem with adding to favourites -> ", err);
-  }
-};
+
 verifyJWT = (token) => {
   console.log("token to verify ", token);
   console.log("secret ->", process.env.JWT_SECRET);
@@ -67,38 +86,27 @@ const verifyRefreshToken = (token) =>
   );
 
 const refreshToken = async (oldRefreshToken) => {
-  //Verify old refresh token and receive back user holding it
   const decoded = await verifyRefreshToken(oldRefreshToken);
-  //Find a user with that token
   const user = await User.findOne({ _id: decoded._id });
-  //if there is no such user witt that id throw new error
   if (!user) {
     throw new Error(`Access is forbidden`);
   }
 
-  //This is a check method to see if the current refresh token is in the users tokens array
   const currentRefreshToken = user.refreshTokens.find(
     (t) => t.refreshToken === oldRefreshToken
   );
-  //And if it is not then throw a new error `Refresh token is wrong`
   if (!currentRefreshToken) {
     throw new Error(`Refresh token is wrong`);
   }
-
-  //If everything is aight on this stage then generate new Access & Refresh token
   const newAccessToken = await generateJWT({ _id: user._id });
   const newRefreshToken = await generateRefreshJWT({ _id: user._id });
 
-  //We create an array without the old refresh token and add the new one as an object { token: newRefreshToken }
   const newRefreshTokens = user.refreshTokens
     .filter((t) => t.refreshToken !== oldRefreshToken)
     .concat({ refreshToken: newRefreshToken });
-  //We set this array as the users refresh Tokens array
   user.refreshTokens = [...newRefreshTokens];
-  //We save the user in DB
   await user.save();
-  //We return back both the Access & Refresh tokens
   return { token: newAccessToken, refreshToken: newRefreshToken };
 };
 
-module.exports = { authenticate, verifyJWT, refreshToken, addToFavourites };
+module.exports = { authenticate, verifyJWT, refreshToken, cryptPassword };

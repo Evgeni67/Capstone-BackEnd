@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-
+const bcrypt = require("bcryptjs")
 const ProfileSchema = new Schema(
   {
     email: {
@@ -9,31 +9,43 @@ const ProfileSchema = new Schema(
     password: {
       type: String,
       required: true,
-      select:false,
     },
     address: {
       type: String,
       required: true,
     },
     phoneNumber: {
-        type: String,
-        required: true,
-        select:false,
+      type: String,
+      required: true,
+      select: false,
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+        },
+        refreshToken: {
+          type: String,
+        },
       },
+    ],
   },
   { timestamps: true }
 );
 
-ProfileSchema.static(
-  "addExperienceToProfile",
-  async function (experienceID, profileID) {
-    await ProfileModel.findByIdAndUpdate(
-      profileID,
-      { $push: { experiences: experienceID } },
-      { runValidators: true, new: true }
-    );
+ProfileSchema.statics.findByCredentials = async function (email, plainPW) {
+  const user = await this.findOne({ email });
+  console.log("USER ---------------------->",user);
+  if (user) {
+    console.log("USER PASSWORD ------------>",user.password, plainPW)
+    const isMatch = await bcrypt.compare(plainPW, user.password);
+    console.log(isMatch)
+    if (isMatch) return user;
+    else return null;
+  } else {
+    return null;
   }
-);
+};
 
 const ProfileModel = model("Profiles", ProfileSchema);
 
