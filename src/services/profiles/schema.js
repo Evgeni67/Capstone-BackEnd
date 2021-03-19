@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 const ProfileSchema = new Schema(
   {
     email: {
@@ -14,6 +14,7 @@ const ProfileSchema = new Schema(
       type: String,
       required: true,
     },
+    productsInTheBasket: [],
     phoneNumber: {
       type: String,
       required: true,
@@ -35,11 +36,11 @@ const ProfileSchema = new Schema(
 
 ProfileSchema.statics.findByCredentials = async function (email, plainPW) {
   const user = await this.findOne({ email });
-  console.log("USER ---------------------->",user);
+  console.log("USER ---------------------->", user);
   if (user) {
-    console.log("USER PASSWORD ------------>",user.password, plainPW)
+    console.log("USER PASSWORD ------------>", user.password, plainPW);
     const isMatch = await bcrypt.compare(plainPW, user.password);
-    console.log(isMatch)
+    console.log(isMatch);
     if (isMatch) return user;
     else return null;
   } else {
