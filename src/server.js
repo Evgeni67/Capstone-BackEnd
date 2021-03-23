@@ -8,7 +8,8 @@ const {
 } = require("./utilities/errorHandling");
 
 const profileRouter = require("./services/profiles");
-const categoryRouter = require("./services/smesiteli");
+const productsRouter = require("./services/products")
+const ordersRouter = require("./services/orders")
 const server = express();
 const port = process.env.PORT || 3002;
 
@@ -23,7 +24,8 @@ server.use(cors());
 server.use(express.json());
 
 server.use("/profile", profileRouter);
-server.use("/categoryForBathroom", categoryRouter);
+server.use("/categoryForBathroom", productsRouter);
+server.use("/order", ordersRouter);
 server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
