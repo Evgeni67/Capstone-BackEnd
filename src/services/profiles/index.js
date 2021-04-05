@@ -8,10 +8,17 @@ const {
 } = require("../../auth/tools");
 const { authorize } = require("../../auth/middleware");
 const passport = require("passport");
-
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const UserModel = require("./schema");
 const usersRouter = express.Router();
-
+var msg = {
+  to: 'evgeni313@abv.bg', // Change to your recipient
+  from: 'evgeni776@abv.bg', // Change to your verified sender
+  subject: 'Welcome to L.O.G.O.',
+  text: 'Shop online at http://localhost:3000',
+  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+}
 usersRouter.post("/register", async (req, res, next) => {
   try {
     const password = await cryptPassword(req.body.password);
@@ -20,6 +27,15 @@ usersRouter.post("/register", async (req, res, next) => {
     const { _id } = newUser.save();
     res.send(newUser._id);
     console.log("-----Registered user------");
+    msg.to = req.body.email
+    sgMail
+  .send(msg)
+  .then(() => {
+    console.log('Email sent')
+  })
+  .catch((error) => {
+    console.error(error)
+  })
   } catch (error) {
     next(error);
   }
@@ -41,6 +57,31 @@ usersRouter.post("/addToBasket", authorize, async (req, res, next) => {
       { new: true }
     );
     res.send(req.user);
+  } catch (error) {
+    next(error);
+  }
+});
+usersRouter.post("/removeFromCart", authorize, async (req, res, next) => {
+  console.log("undefined? ->" ,req.body.id)
+  try {
+    const user = await UserModel.findByIdAndUpdate(
+      req.user._id,
+      { $pull: { productsInTheBasket: { id: req.body.id } } },
+      { new: true }
+    );
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+usersRouter.post("/removeAllFromCart", authorize, async (req, res, next) => {
+  try {
+    const user = await UserModel.findByIdAndUpdate(
+      req.user._id,
+     { productsInTheBasket:[] } ,
+      { new: true }
+    );
+    res.send(user);
   } catch (error) {
     next(error);
   }

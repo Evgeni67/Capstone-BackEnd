@@ -5,7 +5,6 @@ const saltRounds = 10;
 const bcrypt = require("bcryptjs");
 const authenticate = async (user) => {
   try {
-    console.log("authenticate =>", user);
     const newAccessToken = await generateJWT({ _id: user._id });
     const newRefreshToken = await generateRefreshJWT({ _id: user._id });
     const user2 = await User.findByIdAndUpdate(
@@ -17,7 +16,6 @@ const authenticate = async (user) => {
       },
       { new: true }
     );
-    console.log("user2->", user);
 
     if(user2){
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };

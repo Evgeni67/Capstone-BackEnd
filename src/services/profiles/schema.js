@@ -33,7 +33,12 @@ const ProfileSchema = new Schema(
   },
   { timestamps: true }
 );
-
+ProfileSchema.removeProductFromCart = async function (_id,heading) {
+  const user = await this.findOne({ _id });
+  user.productsInTheBasket.filter(x => x.heading !== heading)
+  user.save()
+  return("removed from cart")
+}
 ProfileSchema.statics.findByCredentials = async function (email, plainPW) {
   const user = await this.findOne({ email });
   console.log("USER ---------------------->", user);

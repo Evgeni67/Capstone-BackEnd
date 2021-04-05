@@ -8,17 +8,19 @@ const {
 } = require("./utilities/errorHandling");
 
 const profileRouter = require("./services/profiles");
-const productsRouter = require("./services/products")
-const ordersRouter = require("./services/orders")
+const productsRouter = require("./services/products");
+const ordersRouter = require("./services/orders");
 const server = express();
 const port = process.env.PORT || 3002;
 
-server.use( express.json({limit: '50mb'}) );
-server.use(express.urlencoded({
-  limit: '50mb',
-  extended: true,
-  parameterLimit:50000
-}));
+server.use(express.json({ limit: "50mb" }));
+server.use(
+  express.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 
 server.use(cors());
 server.use(express.json());

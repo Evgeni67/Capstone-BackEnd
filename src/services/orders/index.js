@@ -4,16 +4,33 @@ const multer = require("multer")
 const { authenticate, refreshToken, cryptPassword } = require("../../auth/tools")
 const { authorize } = require("../../auth/middleware")
 const passport = require("passport")
-
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const OrderModel = require("./schema")
 const ordersRouter = express.Router()
-
-ordersRouter.post("/addOrder",  async (req, res, next) => {
+var msg = {
+	to: 'evgeni313@abv.bg', // Change to your recipient
+	from: 'evgeni776@abv.bg', // Change to your verified sender
+	subject: 'New Order',
+	text: 'Shop online at http://localhost:3000',
+	html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  }
+ordersRouter.post("/addOrder",authorize,  async (req, res, next) => {
 	try {
         const newOrder = new OrderModel(req.body)
 		const {_id} = newOrder.save()
 		res.send(newOrder._id)
 		console.log("-----Order sent------")
+		msg.text = req.body.toString()
+		msg.html = req.body.toString()
+		sgMail
+	  .send(msg)
+	  .then(() => {
+		console.log('-------Email sent---------')
+	  })
+	  .catch((error) => {
+		console.error(error)
+	  })
 	} catch (error) {
 		next(error)
 	}
