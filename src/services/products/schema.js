@@ -1,12 +1,21 @@
 const { Schema, model } = require("mongoose");
-const CategorySchema = new Schema(
+const ProductSchema = new Schema(
   {
-    category_name: { type: String },
-    categories: [{category_name: { type: String },  products: [] }],
-  },
-  { timestamps: true }
+    image: { type: String },
+    category: { type: String },
+    manifacturedBy: { type: String },
+    productName: { type: String },
+    category_collection: { type: String },
+    productNumber: { type: String },
+    productDescription: { type: String },
+    productPrice: { type: String },
+    rates:[],
+    comments:[],
+  }
 );
 
-const CategoryModel = model("CategoriesForBathroom", CategorySchema);
+const ProductModel = model("Products", ProductSchema);
 
-module.exports = CategoryModel;
+module.exports = ProductModel;
+
+

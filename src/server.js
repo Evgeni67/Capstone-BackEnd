@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+
 const mongoose = require("mongoose");
 const {
   badRequestHandler,
@@ -14,6 +15,7 @@ const server = express();
 const port = process.env.PORT || 3002;
 
 server.use(express.json({ limit: "50mb" }));
+server.use(cors());
 server.use(
   express.urlencoded({
     limit: "50mb",
@@ -22,15 +24,16 @@ server.use(
   })
 );
 
-server.use(cors());
+
 server.use(express.json());
 
 server.use("/profile", profileRouter);
-server.use("/categoryForBathroom", productsRouter);
+server.use("/product", productsRouter);
 server.use("/order", ordersRouter);
 server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
+
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING, {
