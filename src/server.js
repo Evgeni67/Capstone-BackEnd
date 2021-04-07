@@ -19,7 +19,6 @@ server.use(cors());
 server.use(
   express.urlencoded({
     limit: "50mb",
-    extended: true,
     parameterLimit: 50000,
   })
 );
