@@ -45,7 +45,7 @@ productsRouter.get("/getCategory/:category", async (req, res, next) => {
   }
 });
 productsRouter.post(
-  "/addComment/:id/:comment/:user/:uniqId",
+  "/addComment/:id/:comment/:rate/:title/:date/:user/:uniqId",
   async (req, res, next) => {
     try {
       const product = await ProductModel.findByIdAndUpdate(
@@ -55,7 +55,10 @@ productsRouter.post(
             comments: {
               text: req.params.comment,
               user: req.params.user,
+              rate: req.params.rate,
+              title: req.params.title,
               id: req.params.uniqId,
+              date: req.params.date,
             },
           },
         },
@@ -82,16 +85,16 @@ productsRouter.put(
   async (req, res, next) => {
     try {
       const product = await ProductModel.findById(req.params.productId);
-      var count = 0
-      for(var i = 0; i < product.comments.length; i++){
-       if( product.comments[i].id === req.params.commentId ){
-        product.comments[i].text = req.params.text
-        product.save()
-        i = product.comments.length
-       }
+      var count = 0;
+      for (var i = 0; i < product.comments.length; i++) {
+        if (product.comments[i].id === req.params.commentId) {
+          product.comments[i].text = req.params.text;
+          product.save();
+          i = product.comments.length;
+        }
       }
       console.log("-----Comment Edited------");
-      res.send( product.comments);
+      res.send(product.comments);
     } catch (error) {
       next(error);
     }
