@@ -6,6 +6,46 @@ const { authorize } = require("../../auth/middleware");
 const ProductModel = require("./schema");
 const productsRouter = express.Router();
 
+
+productsRouter.post("/addViews", async (req, res, next) => {
+  try {
+    var products = await ProductModel.find()
+    console.log(products)
+    for (var i = 0; i < products.length; i++) {
+      products[i].stars = 0;
+      products[i].save()
+      console.log(products[i])
+    }
+    console.log("-----Product views added------");
+    res.send("ok");
+  } catch (error) {
+    next(error);
+  }
+});
+productsRouter.post("/addView/:id", async (req, res, next) => {
+  try {
+    var product = await ProductModel.findById(req.params.id)
+    product.views ++;
+    product.save()
+    console.log(product);
+    console.log("-----Product view added------");
+    res.send("ok");
+  } catch (error) {
+    next(error);
+  }
+});
+productsRouter.post("/addStar/:id", async (req, res, next) => {
+  try {
+    var product = await ProductModel.findById(req.params.id)
+    product.stars ++;
+    product.save()
+    console.log(product);
+    console.log("-----Product star added------");
+    res.send("ok");
+  } catch (error) {
+    next(error);
+  }
+});
 productsRouter.post("/addProducts", async (req, res, next) => {
   try {
     for (var i = 0; i < req.body.length; i++) {
@@ -79,22 +119,34 @@ productsRouter.get("/getProduct/:id", async (req, res, next) => {
     next(error);
   }
 });
-
-productsRouter.put(
-  "/editComment/:productId/:commentId/:text",
+//change this to es6
+productsRouter.post(
+  "/editComment/:productId/:id/:text/:rate/:title",
   async (req, res, next) => {
+    console.log("productId ->", req.params.productId)
+    console.log("commentId ->", req.params.id)
+    console.log("text ->", req.params.text)
+    console.log("rate ->", req.params.rate)
+    console.log("title ->", req.params.title)
     try {
       const product = await ProductModel.findById(req.params.productId);
-      var count = 0;
+      var counter = 0
       for (var i = 0; i < product.comments.length; i++) {
-        if (product.comments[i].id === req.params.commentId) {
+        if (product.comments[i].id === req.params.id) {
           product.comments[i].text = req.params.text;
+          product.comments[i].rate = req.params.rate;
+          product.comments[i].title = req.params.title;
+          console.log(product.comments[i]);
+          product.markModified('comments');
           product.save();
           i = product.comments.length;
+          
+          counter ++;
         }
       }
-      console.log("-----Comment Edited------");
-      res.send(product.comments);
+     
+      console.log("last ->", product.comments[counter])
+      res.send(product.comments[i]);
     } catch (error) {
       next(error);
     }
