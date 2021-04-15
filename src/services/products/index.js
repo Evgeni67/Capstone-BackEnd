@@ -123,11 +123,6 @@ productsRouter.get("/getProduct/:id", async (req, res, next) => {
 productsRouter.post(
   "/editComment/:productId/:id/:text/:rate/:title",
   async (req, res, next) => {
-    console.log("productId ->", req.params.productId)
-    console.log("commentId ->", req.params.id)
-    console.log("text ->", req.params.text)
-    console.log("rate ->", req.params.rate)
-    console.log("title ->", req.params.title)
     try {
       const product = await ProductModel.findById(req.params.productId);
       var counter = 0
