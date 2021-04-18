@@ -15,14 +15,14 @@ var msg = {
 	text: 'Shop online at http://localhost:3000',
 	html: '<strong>and easy to do anywhere, even with Node.js</strong>',
   }
-ordersRouter.post("/addOrder",authorize,  async (req, res, next) => {
+ordersRouter.post("/addOrder", authorize,  async (req, res, next) => {
 	try {
         const newOrder = new OrderModel(req.body)
 		const {_id} = newOrder.save()
 		res.send(newOrder._id)
 		console.log("-----Order sent------")
 		msg.text = req.body.toString()
-		msg.html = req.body.toString()
+		msg.html = <img src= "https://marketplace.socialbiz.pro/image/data/DP/addons-in-progress/thank-you-page-sample-1.png"/>
 		sgMail
 	  .send(msg)
 	  .then(() => {
