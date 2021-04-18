@@ -22,7 +22,7 @@ ordersRouter.post("/addOrder", authorize,  async (req, res, next) => {
 		res.send(newOrder._id)
 		console.log("-----Order sent------")
 		msg.text = "kur"
-		msg.html = <img src= "https://marketplace.socialbiz.pro/image/data/DP/addons-in-progress/thank-you-page-sample-1.png"/>
+		msg.html = `<img src= "https://marketplace.socialbiz.pro/image/data/DP/addons-in-progress/thank-you-page-sample-1.png"/>`
 		sgMail
 	  .send(msg)
 	  .then(() => {
