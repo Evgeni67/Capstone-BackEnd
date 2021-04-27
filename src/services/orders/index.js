@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const OrderModel = require("./schema")
 const ordersRouter = express.Router()
 var msg = {
-	to: 'diego@strive.school', // Change to your recipient
+	to: 'lolskinsspothlight@gmail.com', // Change to your recipient
 	from: 'evgeni776@abv.bg', // Change to your verified sender
 	subject: 'New Order',
 	text: 'Shop online at http://localhost:3000',
