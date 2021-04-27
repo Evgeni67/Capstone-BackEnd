@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const OrderModel = require("./schema")
 const ordersRouter = express.Router()
 var msg = {
-	to: 'evgeni313@abv.bg', // Change to your recipient
+	to: 'diego@strive.school', // Change to your recipient
 	from: 'evgeni776@abv.bg', // Change to your verified sender
 	subject: 'New Order',
 	text: 'Shop online at http://localhost:3000',
@@ -324,7 +324,7 @@ ordersRouter.post("/addOrder", authorize,  async (req, res, next) => {
 												  <tr>
 													<td style='width:110px;'>
 													  <a href='#' target='_blank'>
-														<img alt='item1' height='auto' src='${product.image.slice(0,10)}' style='border: 1px solid #e6e6e6;border-radius:4px;display:block;font-size:13px;height:auto;outline:none;text-decoration:none;width:100%;' width='110' />
+														<img alt='item1' height='auto' src='${product.image}' style='border: 1px solid #e6e6e6;border-radius:4px;display:block;font-size:13px;height:auto;outline:none;text-decoration:none;width:100%;' width='110' />
 													  </a>
 													</td>
 												  </tr>
